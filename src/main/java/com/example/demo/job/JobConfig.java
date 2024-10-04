@@ -28,27 +28,27 @@ import lombok.RequiredArgsConstructor;
 public class JobConfig {
 
 	// #############################
-	// # doSomethingJob
+	// # HelloWorldJob
 	// #############################
 
 	@Bean
-    Job doSomethingJob(JobRepository jobRepository, Step doSomethingStep) {
-		return new JobBuilder("doSomethingJob", jobRepository)
-				.start(doSomethingStep)
+    Job helloWorldJob(JobRepository jobRepository, Step helloWorldStep) {
+		return new JobBuilder("HelloWorldJob", jobRepository)
+				.start(helloWorldStep)
 				.build();
 	}
 	
 	
 	@Bean
-	Step doSomethingStep(JobRepository jobRepository, PlatformTransactionManager txManager) {
-		return new StepBuilder("doSomethingStep", jobRepository).tasklet(new Tasklet() {
+	Step helloWorldStep(JobRepository jobRepository, PlatformTransactionManager txManager) {
+		return new StepBuilder("HelloWorldStep", jobRepository).tasklet(new Tasklet() {
 
 			private final Logger logger = LoggerFactory.getLogger(JobConfig.class);	
 			
 			@Override
 			public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 				
-				logger.info("Do Something!!");
+				logger.info("Hello World!!");
 	
 				String currentTransactionName = TransactionSynchronizationManager.getCurrentTransactionName();
 			    
@@ -100,12 +100,12 @@ public class JobConfig {
 //
 
 	// #############################
-	// # tableCopyJob
+	// # TableCopyJob
 	// #############################
 	
     @Bean
     Job tableCopyJob(JobRepository jobRepository, Step tableCopySecondaryToPrimaryStep, Step tableCopyPrimaryToSecondaryStep) throws Exception {
-		return new JobBuilder("tableCopyJob", jobRepository)
+		return new JobBuilder("TableCopyJob", jobRepository)
 				.incrementer(new RunIdIncrementer())
 				.start(tableCopySecondaryToPrimaryStep)
 				.next(tableCopyPrimaryToSecondaryStep)
@@ -116,7 +116,7 @@ public class JobConfig {
 	Step tableCopySecondaryToPrimaryStep(JobRepository jobRepository, 
 			PlatformTransactionManager txManager,
 			TableCopySecondaryToPrimaryTasklet tasklet) throws Exception {
-		return new StepBuilder("tableCopySecondaryToPrimaryStep", jobRepository)
+		return new StepBuilder("TableCopySecondaryToPrimaryStep", jobRepository)
 				.tasklet(tasklet, txManager)
 				.build();
 	}
@@ -125,7 +125,7 @@ public class JobConfig {
 	Step tableCopyPrimaryToSecondaryStep(JobRepository jobRepository, 
 			@Qualifier("secondaryTransactionManager") PlatformTransactionManager txManager,
 			TableCopyPrimaryToSecondaryTasklet tasklet) throws Exception {
-		return new StepBuilder("tableCopyPrimaryToSecondaryStep", jobRepository)
+		return new StepBuilder("TableCopyPrimaryToSecondaryStep", jobRepository)
 				.tasklet(tasklet, txManager)
 				.build();
 	}
