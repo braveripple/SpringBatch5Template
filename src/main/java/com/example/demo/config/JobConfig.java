@@ -15,6 +15,7 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
@@ -27,6 +28,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class JobConfig {
 
+	private final ApplicationProperties properties;
+	private final MessageSourceAccessor messageSource;
+	
 	// #############################
 	// # HelloWorldJob
 	// #############################
@@ -37,7 +41,6 @@ public class JobConfig {
 				.start(helloWorldStep)
 				.build();
 	}
-	
 	
 	@Bean
 	Step helloWorldStep(JobRepository jobRepository, PlatformTransactionManager txManager) {
@@ -57,6 +60,10 @@ public class JobConfig {
 			    } else {
 			        System.out.println("No active transaction.");
 			    }
+			    
+			    logger.info(properties.getHelloWorld());
+			    logger.info(messageSource.getMessage("helloworld"));
+
 				return RepeatStatus.FINISHED;
 			}
 		}, txManager).build();
